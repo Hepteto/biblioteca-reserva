@@ -1,31 +1,40 @@
-const express = require('express');
-const app = express();
-const mongoose = require('mongoose');
-const dotenv = require('dotenv');
-const cors = require('cors');
-const todoRoutes = require('./Routes/todoRoutes');
+// config inicial
+const express = require('express')
+const app = express()
 
-dotenv.config();
-app.use(cors());
-app.use(express.urlencoded({ extended: true }));
-app.use(express.json());
+const dotenv = require('dotenv')
+dotenv.config()
 
-// Middleware para lidar com solicitações de /favicon.ico
-app.get('/favicon.ico', (req, res) => res.status(204));
+const mongoose = require('mongoose')
+
+const cors = require('cors')
+app.use(cors())
+
+// Forma de ler JSON/ middlewares
+app.use(
+    express.urlencoded({
+        extended: true,
+    }),
+)
+app.use(express.json())
 
 // Rotas da API
-app.use('/todo', todoRoutes);
+const kindleRoutes = require('./routes/kindleRoutes')
+const salaGrupoRoutes = require('./routes/salaGrupoRoutes')
+
+app.use('/salagrupo', salaGrupoRoutes)
+app.use('/kindle', kindleRoutes)
 
 // Rota/ Endpoint inicial
 app.get('/', (req,res) =>{
     res.json({message: 'Testando API'})
-});
+})
 
 // entregar uma porta
-mongoose.connect(process.env.MONGO) // conectar ao banco de dados
-    .then(() => {
-        console.log("Conectamos ao mongo DB");
-        const port = process.env.PORT || 3000;
-        app.listen(port, () => console.log(`Servidor rodando na porta ${port}`));
-    })
-    .catch((err) => console.log(err));
+// mongoose.connect( process.env.MONGO ) // conectar ao banco de dados
+mongoose.connect( process.env.MONGO ) // conectar ao banco de dados
+.then(() => {
+    console.log("Conectamos ao mongo DB")
+    app.listen(3000) // Vai ler a porta
+})
+.catch((err) => console.log(err))
